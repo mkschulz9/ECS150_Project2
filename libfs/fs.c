@@ -310,7 +310,6 @@ int fs_write(int fd, void *buf, size_t count)
 	/* TODO: Phase 4 */
 }
 
-<<<<<<< HEAD
 /**
  * fs_read - Read from a file
  * @fd: File descriptor
@@ -331,14 +330,9 @@ int fs_write(int fd, void *buf, size_t count)
  * return the number of bytes actually read.
  */
 
-int index_dataBlk
-=======
-
-int fs_write(int fd, void *buf, size_t count)
-{
-	/* TODO: Phase 4 */
-}
->>>>>>> dc1b9fa9bac33409e39efb9ab6e68e34db42a000
+/*int index_dataBlk {
+	return 0;
+}*/
 
 int fs_read(int fd, void *buf, size_t count)
 {
