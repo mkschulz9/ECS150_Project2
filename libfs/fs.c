@@ -19,11 +19,11 @@ struct superblock {
 	uint16_t num_datablks;        // amount of data blocks
 	uint8_t num_fatBlks;          // number of blocks for FAT
 	uint8_t pad[4079];            // unused, padding
-};
+} superblock;
 
 struct fat {
 	uint16_t *entries;
-};
+} fat;
 
 struct file {
 	char filename[FS_FILENAME_LEN];         // filename (including NULL char)
@@ -40,23 +40,11 @@ struct openEntry {
 struct openFiles {
 	int openCount;
 	struct openEntry entry[FS_OPEN_MAX_COUNT];
-};
+} openFiles;
 
 struct root_dir {
 	struct file root_dir[FS_FILE_MAX_COUNT];
-};
-
-// define struct objs needed in functions below
-struct superblock superblock;
-struct fat fat;
-struct root_dir root_dir;
-struct openFiles openFiles;
-
-// create empty structs to use in unmount
-const struct superblock empty_superblock;
-const struct fat empty_fat;
-const struct root_dir empty_root_dir;
-const struct openFiles empty_openFiles;
+} root_dir;
 
 int fs_mount(const char *diskname)
 {
@@ -95,27 +83,21 @@ int fs_mount(const char *diskname)
 int fs_umount(void)
 {
 
-	// empty out structs
-	superblock = empty_superblock;
-	fat = empty_fat;
-	root_dir = empty_root_dir;
-	openFiles = empty_openFiles;
+	
 
-	// return -1 if no FS is currently mounted
-	if ((block_disk_count()) == -1) return -1;
-
-	// write root_dir to disk
-	if (block_write(superblock.rootBlk_index, &root_dir.root_dir) == -1) return -1;
-
+	int i = 1;
 	// write fat entries to disk
-	for (int i = 1; i < superblock.num_fatBlks; i++) {
-		if (block_write(i, fat.entries + (i-1) * BLOCK_SIZE) == -1) 		return -1;
+	while (i < superblock.rootBlk_index) {
+		if (block_write(i, fat.entries + (i - 1) * BLOCK_SIZE) == -1) return -1;
+		i = i+1;
 	}
 
-	//return 0 if VFS cannot be closed
-	if (block_disk_close() == -1) return -1;
+	if(block_write(0, &superblock) == -1) return -1;
+	
+	// write root_dir to disk
+	if (block_write(superblock.rootBlk_index, &root_dir) == -1) return -1;
 
-	//check if there are still open FDs (ToDo Phase 3)
+	if (block_disk_close() == -1) return -1;
 
 	return 0;
 }
@@ -226,11 +208,11 @@ int fs_delete(const char *filename)
 
 int fs_ls(void)
 {
-	printf("FS Ls:");
+	printf("FS Ls:\n");
 	int i = 0;
 	while (i < FS_FILE_MAX_COUNT) {
-		if(strlen(root_dir.root_dir[0].filename) != 0) {
-			printf("\nfile: %s, size: %i, data_blk: %i", root_dir.root_dir[i].filename, root_dir.root_dir[i].file_size, root_dir.root_dir[i].index_DataBlk);
+		if(strlen(root_dir.root_dir[i].filename) != 0) {
+			printf("file: %s, size: %i, data_blk: %i\n", root_dir.root_dir[i].filename, root_dir.root_dir[i].file_size, root_dir.root_dir[i].index_DataBlk);
 		}
 		i = i + 1;
 	}
@@ -281,7 +263,7 @@ int fs_close(int fd)
 
 int fs_stat(int fd)
 {
-	if (fd > 31 || fd < 0 || !strlen(openFiles.entry[fd].filename)) return -1;
+	if (fd > 31 || fd < 0 || strlen(openFiles.entry[fd].filename) == 0) return -1;
 
 	int size = -1, i = 0;
 
