@@ -280,7 +280,7 @@ int fs_stat(int fd)
 int fs_lseek(int fd, size_t offset)
 {
 	if (fd > 31 || fd < 0 || !strlen(openFiles.entry[fd].filename)) return -1;
-	if (offset < 0 || offset > fs_stat(fd)) return -1;
+	if (offset > (size_t)fs_stat(fd)) return -1;
 	if (fs_stat(fd) == -1) return -1;
 
 	openFiles.entry[fd].offset = offset;
@@ -291,7 +291,9 @@ int fs_write(int fd, void *buf, size_t count)
 {
 	// return -1 if fd is out of range or out of range or if no FS is mounted
 	if (fs_stat(fd) == -1) return -1;
-
+	
+	if (count == 1) {}
+	
 	// return -1 if buf is NULL
 	if (buf == NULL) return -1;
 
@@ -302,6 +304,8 @@ int fs_read(int fd, void *buf, size_t count)
 {
 	// return -1 if fd is out of range or out of range or if no FS is mounted
 	if (fs_stat(fd) == -1) return -1;
+
+	if (count == 1) {}
 
 	// return -1 if buf is NULL
 	if (buf == NULL) return -1;
