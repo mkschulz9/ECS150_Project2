@@ -307,52 +307,22 @@ int fs_lseek(int fd, size_t offset)
 
 int fs_write(int fd, void *buf, size_t count)
 {
-	/* TODO: Phase 4 */
-}
-
-/**
- * fs_read - Read from a file
- * @fd: File descriptor
- * @buf: Data buffer to be filled with data
- * @count: Number of bytes of data to be read
- *
- * Attempt to read @count bytes of data from the file referenced by file
- * descriptor @fd into buffer pointer by @buf. It is assumed that @buf is large
- * enough to hold at least @count bytes.
- *
- * The number of bytes read can be smaller than @count if there are less than
- * @count bytes until the end of the file (it can even be 0 if the file offset
- * is at the end of the file). The file offset of the file descriptor is
- * implicitly incremented by the number of bytes that were actually read.
- *
- * Return: -1 if no FS is currently mounted, or if file descriptor @fd is
- * invalid (out of bounds or not currently open), or if @buf is NULL. Otherwise
- * return the number of bytes actually read.
- */
-
-/*int index_dataBlk {
-	return 0;
-}*/
-
-int fs_read(int fd, void *buf, size_t count)
-{
-	/*int bytes_counted = 0;
-
-	// return -1 if no FS is currently mounted
-	if (superblock.sig != signature_default) return -1;
+	// return -1 if fd is out of range or out of range or if no FS is mounted
+	if (fs_stat(fd) == -1) return -1;
 
 	// return -1 if buf is NULL
 	if (buf == NULL) return -1;
 
-	// return -1 if fd is out of range or out of range
-	if (fd >= FS_OPEN_MAX_COUNT || fd < 0) return -1;
+	return 0;
+}
 
-	// small operation (less than a block)
+int fs_read(int fd, void *buf, size_t count)
+{
+	// return -1 if fd is out of range or out of range or if no FS is mounted
+	if (fs_stat(fd) == -1) return -1;
 
-	// access entire blocks except first or last block
+	// return -1 if buf is NULL
+	if (buf == NULL) return -1;
 
-	// partial access on first or last block
-	if ()
-
-	return bytes_counted;*/
+	return 0;
 }
