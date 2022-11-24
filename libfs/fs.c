@@ -108,7 +108,38 @@ int fs_umount(void)
 
 int fs_info(void)
 {
-	/* TODO: Phase 1 */
+	int free_dataBlks = superblock.num_datablks;
+	int free_rdir = FS_FILE_MAX_COUNT;
+	int disk_block_count = block_disk_count();
+
+	// return -1 if no underlying virtual disk was opened
+	if (disk_block_count == -1) return -1;
+
+	// determine number of free data blks
+	for (int i = 0; i < superblock.num_datablks; i++) {
+		if (fat.entries[i] == 0) continue;
+		free_dataBlks--;
+	}
+
+	// determine number of free rdirs
+	for (int i = 0; i < FS_FILE_MAX_COUNT; i++) { 
+		if(root_dir.root_dir[i].filename[0] == 0) continue;
+		free_rdir--;
+	}
+
+
+	//display info about the currently mounted FS
+	printf("FS Info:\n");
+	printf("total_blk_count=%i\n", superblock.diskBlk_total);
+	printf("fat_blk_count=%i\n", superblock.num_fatBlks);
+	printf("rdir_blk=%i\n", superblock.rootBlk_index);
+	printf("data_blk=%i\n", superblock.firstDataBlk_index);
+	printf("data_blk_count=%i\n", superblock.num_datablks);
+	//need helper functions to calculate
+	printf("fat_free_ratio=%i/%i\n", free_dataBlks, superblock.num_datablks);
+	printf("rdir_free_ratio=%i/%i\n", free_rdir, FS_FILE_MAX_COUNT);
+
+	return 0;
 }
 
 int fs_create(const char *filename)
@@ -269,6 +300,19 @@ int fs_write(int fd, void *buf, size_t count)
 
 int fs_read(int fd, void *buf, size_t count)
 {
-	/* TODO: Phase 4 */
+	int bytes_counted = 0;
+
+	// return -1 if no FS is currently mounted
+	if (superblock.sig != signature_default) return -1;
+
+	// return -1 if buf is NULL
+	if (buf == NULL) return -1;
+
+	// return -1 if fd is out of range or out of range
+	if (fd >= FS_OPEN_MAX_COUNT || fd < 0) return -1;
+
+	
+
+	return bytes_counted;
 }
 
