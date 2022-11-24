@@ -1,7 +1,7 @@
 # Target library
 lib := libfs.a
 CC := gcc
-CFLAGS := -Wall -Wextra -Werror -c
+CFLAGS := -Wall -Wextra
 objs := disk.o fs.o
 
 all: $(lib)
