@@ -82,9 +82,6 @@ int fs_mount(const char *diskname)
 
 int fs_umount(void)
 {
-
-	
-
 	int i = 1;
 	// write fat entries to disk
 	while (i < superblock.rootBlk_index) {
