@@ -336,7 +336,7 @@ int fs_write(int fd, void *buf, size_t count)
 
 int fs_read(int fd, void *buf, size_t count)
 {
-	int bytes_counted = 0;
+	/*int bytes_counted = 0;
 
 	// return -1 if no FS is currently mounted
 	if (superblock.sig != signature_default) return -1;
@@ -354,6 +354,5 @@ int fs_read(int fd, void *buf, size_t count)
 	// partial access on first or last block
 	if ()
 
-	return bytes_counted;
+	return bytes_counted;*/
 }
-
